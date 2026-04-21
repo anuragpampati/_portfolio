@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anurag Pampati — Software Engineer</title>
+  <meta name="description" content="Software engineer at Amazon. I ship production LLM agents, not demos.">
+  <meta property="og:title" content="Anurag Pampati — Software Engineer">
+  <meta property="og:description" content="SDE at AWS. Built a production Claude agent that 15 engineers use daily.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-logo">AP</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="./resume.pdf" class="nav-resume" target="_blank" download>Resume ↓</a>
+    <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-mobile" id="nav-mobile">
+    <a href="#about">About</a>
+    <a href="#projects">Projects</a>
+    <a href="#experience">Experience</a>
+    <a href="#skills">Skills</a>
+    <a href="#contact">Contact</a>
+    <a href="./resume.pdf" target="_blank" download>Resume ↓</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="particle-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Open to SDE II &amp; Applied AI roles · Seattle
+    </div>
+    <h1 class="hero-name">Anurag Pampati</h1>
+    <div class="hero-role"><span id="typed-text"></span></div>
+    <p class="hero-tagline">I don't demo AI — I ship it to production.</p>
+    <p class="hero-sub">
+      Built an LLM agent at Amazon that on-call engineers use daily.<br>
+      Alarm investigations: <span class="metric-highlight">45 min → 10 min</span>&nbsp;&nbsp;·&nbsp;&nbsp;Ops reports: <span class="metric-highlight">2 hrs → 5 min</span>
+    </p>
+    <div class="hero-ctas">
+      <a href="#projects" class="btn btn-primary">See My Work</a>
+      <a href="https://github.com/anuragpampati" class="btn btn-secondary" target="_blank" rel="noopener">GitHub ↗</a>
+      <a href="https://linkedin.com/in/anurag-pampati" class="btn btn-secondary" target="_blank" rel="noopener">LinkedIn ↗</a>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="section">
+  <div class="container">
+    <div class="stats-row">
+      <div class="stat-card fade-up">
+        <div class="stat-number" data-count="3">0</div>
+        <div class="stat-suffix">+</div>
+        <div class="stat-label">Years Experience</div>
+      </div>
+      <div class="stat-card fade-up" style="--delay:0.1s">
+        <div class="stat-number static">8–10</div>
+        <div class="stat-label">Hrs Saved / Week</div>
+      </div>
+      <div class="stat-card fade-up" style="--delay:0.2s">
+        <div class="stat-number" data-count="15">0</div>
+        <div class="stat-label">Engineers Served Daily</div>
+      </div>
+      <div class="stat-card fade-up" style="--delay:0.3s">
+        <div class="stat-number static">95%</div>
+        <div class="stat-label">Provisioning Effort Cut</div>
+      </div>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-text fade-up">
+        <h2 class="section-title">About Me</h2>
+        <p>I'm a software engineer at <strong>Amazon Web Services</strong> in Seattle, working on WorkSpaces Core. My focus is making AI systems reliable in real environments — not research, not demos, but production systems that engineers depend on every day.</p>
+        <p>Earlier this year I designed and shipped <strong>ws-core-ops-helper</strong> — an end-to-end LLM agent on Claude and MCP that runs the oncall workflow for my team. It pulls tickets, sets up credentials, correlates metrics, traces logs, and posts a structured diagnosis — autonomously. The team went from 45-minute alarm investigations to 10 minutes.</p>
+        <p>Before Amazon I built retirement benefits platforms at NYSTRS and REST APIs at LTIMindtree. I hold an MS in Computer Science from Syracuse University (GPA 3.67).</p>
+        <blockquote class="about-hook">
+          "I don't just use AI tools — I shipped one to production at Amazon that engineers rely on daily."
+        </blockquote>
+      </div>
+      <div class="about-skills-preview fade-up" style="--delay:0.2s">
+        <div class="about-skill-group">
+          <span class="skill-group-label">AI &amp; LLM</span>
+          <div class="skill-pills">
+            <span>Claude LLM</span><span>MCP</span><span>RAG</span>
+            <span>Agentic Workflows</span><span>Prompt Engineering</span>
+          </div>
+        </div>
+        <div class="about-skill-group">
+          <span class="skill-group-label">Cloud &amp; Backend</span>
+          <div class="skill-pills">
+            <span>AWS</span><span>Python</span><span>Java</span>
+            <span>TypeScript</span><span>CDK</span><span>Lambda</span>
+          </div>
+        </div>
+        <div class="about-skill-group">
+          <span class="skill-group-label">Frontend</span>
+          <div class="skill-pills">
+            <span>React</span><span>Angular</span><span>TypeScript</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <h2 class="section-title">Featured Projects</h2>
+      <p class="section-sub">Things I've built that matter</p>
+    </div>
+    <div class="projects-grid">
+
+      <!-- ws-core-ops-helper — featured, full width -->
+      <div class="project-card project-featured fade-up" id="proj-ws">
+        <div class="project-card-left">
+          <div class="project-badges">
+            <span class="badge badge-prod">⬤ PRODUCTION</span>
+            <span class="badge badge-company">Amazon Internal</span>
+          </div>
+          <h3 class="project-name">ws-core-ops-helper</h3>
+          <p class="project-desc">End-to-end LLM oncall agent at Amazon. 4 custom skills, 2 MCP tool servers, and a 6-step autonomous diagnostic loop. Used daily by ~15 engineers on WorkSpaces Core. New engineers investigate alarms without needing to ask anyone for context.</p>
+          <div class="project-metrics">
+            <div class="metric">
+              <div class="metric-values"><span class="metric-before">45 min</span><span class="metric-arrow">→</span><span class="metric-after">10 min</span></div>
+              <div class="metric-label">Alarm Investigation</div>
+            </div>
+            <div class="metric">
+              <div class="metric-values"><span class="metric-before">2 hrs</span><span class="metric-arrow">→</span><span class="metric-after">5 min</span></div>
+              <div class="metric-label">Ops Reports</div>
+            </div>
+            <div class="metric">
+              <div class="metric-values"><span class="metric-after">~15</span></div>
+              <div class="metric-label">Engineers Served</div>
+            </div>
+          </div>
+          <div class="project-tags">
+            <span>Claude LLM</span><span>MCP</span><span>Python</span>
+            <span>Amazon AIM</span><span>DynamoDB</span><span>CloudWatch</span><span>CDK</span>
+          </div>
+        </div>
+        <div class="project-card-right">
+          <div class="project-terminal" id="ws-terminal">
+            <div class="terminal-header">
+              <span class="terminal-dot red"></span>
+              <span class="terminal-dot yellow"></span>
+              <span class="terminal-dot green"></span>
+              <span class="terminal-title">oncall-agent · ws-core-ops-helper</span>
+            </div>
+            <div class="terminal-body" id="ws-terminal-body">
+              <span class="terminal-line info">Hover to run a live demo...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AskSQL -->
+      <div class="project-card fade-up" style="--delay:0.1s">
+        <div class="project-badges">
+          <span class="badge badge-live">● LIVE</span>
+        </div>
+        <h3 class="project-name">AskSQL</h3>
+        <p class="project-desc">Ask a question in plain English — get back a SQL query and real results. No SQL knowledge required. RAG selects only relevant table schemas before passing to Claude, keeping context lean and accurate.</p>
+        <div class="project-flow">
+          <span>Question</span><span class="flow-arrow">→</span>
+          <span>ChromaDB RAG</span><span class="flow-arrow">→</span>
+          <span>Claude</span><span class="flow-arrow">→</span>
+          <span>SQLite</span><span class="flow-arrow">→</span>
+          <span>Results</span>
+        </div>
+        <div class="project-tags">
+          <span>Python</span><span>Flask</span><span>Claude API</span>
+          <span>ChromaDB</span><span>SQLite</span><span>RAG</span>
+        </div>
+        <div class="project-links">
+          <a href="https://asksql-m9ij.onrender.com/" target="_blank" rel="noopener" class="proj-link proj-link-demo">Live Demo ↗</a>
+        </div>
+      </div>
+
+      <!-- Game Hub -->
+      <div class="project-card fade-up" style="--delay:0.2s">
+        <div class="project-badges">
+          <span class="badge badge-live">● LIVE</span>
+        </div>
+        <h3 class="project-name">Game Hub</h3>
+        <p class="project-desc">Game discovery app with search, filters, and sorting across thousands of games. Built to explore modern React patterns: hooks, Context API, and responsive grid layouts.</p>
+        <div class="project-tags">
+          <span>React</span><span>TypeScript</span><span>Context API</span><span>Vercel</span>
+        </div>
+        <div class="project-links">
+          <a href="https://game-hub-zeta-topaz.vercel.app" target="_blank" rel="noopener" class="proj-link proj-link-demo">Live Demo ↗</a>
+          <a href="https://github.com/anuragpampati/game-hub" target="_blank" rel="noopener" class="proj-link proj-link-gh">GitHub ↗</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" class="section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <h2 class="section-title">Experience</h2>
+    </div>
+    <div class="timeline">
+
+      <div class="timeline-item fade-up">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <div>
+              <h3 class="timeline-role">Software Development Engineer</h3>
+              <span class="timeline-company">Amazon Web Services</span>
+            </div>
+            <div class="timeline-meta">
+              <span class="timeline-period">May 2025 – Present</span>
+              <span class="timeline-location">Seattle, WA</span>
+            </div>
+          </div>
+          <ul class="timeline-bullets">
+            <li><strong>ws-core-ops-helper:</strong> Production LLM agent on Claude + MCP. 4 skills, autonomous 6-step loop. Saves 8–10 hrs/week for 15 engineers.</li>
+            <li>CDK pipelines for account provisioning and IAM across all AWS regions — cut manual effort ~95%.</li>
+            <li>Load testing framework at P50/P90/P99; billing canary and Lambda auditors for metering validation.</li>
+            <li>Microservices migration — ~90% reduction in operational overhead.</li>
+            <li>Observability pipelines (Lambda + Data Streams) for real-time ops visibility.</li>
+          </ul>
+          <div class="timeline-tags">
+            <span>Claude LLM</span><span>MCP</span><span>CDK</span><span>DynamoDB</span>
+            <span>Lambda</span><span>TypeScript</span><span>Java</span><span>Python</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item fade-up" style="--delay:0.1s">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <div>
+              <h3 class="timeline-role">IT Business Solutions Developer</h3>
+              <span class="timeline-company">NY State Teachers' Retirement System</span>
+            </div>
+            <div class="timeline-meta">
+              <span class="timeline-period">Jul 2024 – Apr 2025</span>
+              <span class="timeline-location">Albany, NY</span>
+            </div>
+          </div>
+          <ul class="timeline-bullets">
+            <li>Backend services and frontend components for retirement benefits platforms — user satisfaction up 60%.</li>
+            <li>ServiceNow workflow automation — team productivity up 45%.</li>
+            <li>Data extraction scripts for Workday migration; translated retirement rules into technical requirements.</li>
+          </ul>
+          <div class="timeline-tags">
+            <span>Java Spring Boot</span><span>React</span><span>Angular</span><span>Oracle</span><span>SQL</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item fade-up" style="--delay:0.2s">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <div>
+              <h3 class="timeline-role">Senior Software Engineer</h3>
+              <span class="timeline-company">LTIMindtree</span>
+            </div>
+            <div class="timeline-meta">
+              <span class="timeline-period">Nov 2020 – Jul 2022</span>
+              <span class="timeline-location">Hyderabad, India</span>
+            </div>
+          </div>
+          <ul class="timeline-bullets">
+            <li>REST APIs in Java 8 + Spring Boot; reduced endpoint latency by 25%.</li>
+            <li>Migrated test management tool to AWS (EC2, S3, RDS).</li>
+            <li>Complex SQL queries and stored procedures for core reporting.</li>
+          </ul>
+          <div class="timeline-tags">
+            <span>Java</span><span>Spring Boot</span><span>MySQL</span><span>AWS</span><span>Kafka</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item fade-up" style="--delay:0.3s">
+        <div class="timeline-marker timeline-edu"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <div>
+              <h3 class="timeline-role">M.S. Computer Science</h3>
+              <span class="timeline-company">Syracuse University</span>
+            </div>
+            <div class="timeline-meta">
+              <span class="timeline-period">2022 – 2024</span>
+              <span class="timeline-location">GPA 3.67</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <h2 class="section-title">Skills</h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-group fade-up">
+        <h3 class="skill-group-title">AI &amp; LLM</h3>
+        <div class="skill-tags">
+          <span>Claude LLM</span><span>MCP (Model Context Protocol)</span>
+          <span>Agentic Workflows</span><span>RAG</span><span>LLM Tool Use</span>
+          <span>Prompt Engineering</span><span>Amazon AIM Framework</span><span>LLMOps</span>
+        </div>
+      </div>
+      <div class="skill-group fade-up" style="--delay:0.1s">
+        <h3 class="skill-group-title">Backend &amp; Cloud</h3>
+        <div class="skill-tags">
+          <span>Java</span><span>Python</span><span>TypeScript</span>
+          <span>REST APIs</span><span>Microservices</span><span>AWS CDK</span>
+          <span>Lambda</span><span>DynamoDB</span><span>EC2</span>
+          <span>S3</span><span>CloudWatch</span><span>ECS</span><span>CI/CD</span>
+        </div>
+      </div>
+      <div class="skill-group fade-up" style="--delay:0.2s">
+        <h3 class="skill-group-title">Frontend</h3>
+        <div class="skill-tags">
+          <span>React</span><span>Angular</span><span>HTML/CSS</span><span>Context API</span>
+        </div>
+      </div>
+      <div class="skill-group fade-up" style="--delay:0.3s">
+        <h3 class="skill-group-title">Data &amp; Tools</h3>
+        <div class="skill-tags">
+          <span>SQL</span><span>SQLite</span><span>PostgreSQL</span><span>Oracle</span>
+          <span>ChromaDB</span><span>Git</span><span>Kafka</span><span>Agile/Scrum</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="section">
+  <div class="container">
+    <div class="contact-inner fade-up">
+      <h2 class="contact-heading">Let's build something.</h2>
+      <p class="contact-sub">I'm open to SDE II and Applied AI / LLM Engineer roles in Seattle or remote. If you're working on something that takes AI reliability seriously, I'd like to hear about it.</p>
+      <div class="contact-links">
+        <button class="contact-email" id="copy-email" data-email="anuragpampati01@gmail.com">
+          <span class="email-icon">✉</span>
+          <span class="email-text">anuragpampati01@gmail.com</span>
+          <span class="email-copy">Copy</span>
+        </button>
+        <a href="https://linkedin.com/in/anurag-pampati" target="_blank" rel="noopener" class="contact-social">LinkedIn ↗</a>
+        <a href="https://github.com/anuragpampati" target="_blank" rel="noopener" class="contact-social">GitHub ↗</a>
+        <a href="./resume.pdf" download class="contact-social">Resume ↓</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p>Built by Anurag Pampati &nbsp;·&nbsp; 2025 &nbsp;·&nbsp; Seattle, WA</p>
+  </div>
+</footer>
+
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
