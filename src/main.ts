@@ -3,9 +3,10 @@ import Typed from 'typed.js';
 
 /* ── Types ─────────────────────────────────────────────────────────────────── */
 
-interface MousePosition {
-  x: number | null;
-  y: number | null;
+interface StatConfig {
+  el: HTMLElement;
+  target: number;
+  duration: number;
 }
 
 interface TerminalLine {
@@ -13,10 +14,230 @@ interface TerminalLine {
   readonly cls: 'cmd' | 'ok' | 'info' | 'done';
 }
 
-interface StatConfig {
-  el: HTMLElement;
-  target: number;
-  duration: number;
+/* ── Custom Cursor ──────────────────────────────────────────────────────────── */
+
+class CustomCursor {
+  private dot!: HTMLElement;
+  private ring!: HTMLElement;
+  private mx = 0;
+  private my = 0;
+  private rx = 0;
+  private ry = 0;
+  private rafId = 0;
+
+  constructor() {
+    const dot  = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    if (!dot || !ring) return;
+    this.dot  = dot;
+    this.ring = ring;
+    this.bindEvents();
+    this.loop();
+  }
+
+  private bindEvents(): void {
+    document.addEventListener('mousemove', (e) => {
+      this.mx = e.clientX;
+      this.my = e.clientY;
+      this.dot.style.left = `${e.clientX}px`;
+      this.dot.style.top  = `${e.clientY}px`;
+    });
+  }
+
+  private loop(): void {
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+    this.rx = lerp(this.rx, this.mx, 0.12);
+    this.ry = lerp(this.ry, this.my, 0.12);
+    this.ring.style.left = `${this.rx}px`;
+    this.ring.style.top  = `${this.ry}px`;
+    this.rafId = requestAnimationFrame(() => this.loop());
+  }
+
+  destroy(): void { cancelAnimationFrame(this.rafId); }
+}
+
+/* ── Scroll Progress ────────────────────────────────────────────────────────── */
+
+class ScrollProgress {
+  private bar!: HTMLElement;
+
+  constructor() {
+    const bar = document.getElementById('scroll-progress');
+    if (!bar) return;
+    this.bar = bar;
+    window.addEventListener('scroll', () => this.update(), { passive: true });
+  }
+
+  private update(): void {
+    const scrolled = window.scrollY;
+    const total    = document.documentElement.scrollHeight - window.innerHeight;
+    const pct      = total > 0 ? (scrolled / total) * 100 : 0;
+    this.bar.style.width = `${pct}%`;
+  }
+}
+
+/* ── Card Tilt ──────────────────────────────────────────────────────────────── */
+
+class CardTilt {
+  constructor() {
+    document.querySelectorAll<HTMLElement>('[data-tilt]').forEach(card => {
+      const shine = card.querySelector<HTMLElement>('.tilt-shine');
+
+      card.addEventListener('mousemove', (e) => {
+        const rect   = card.getBoundingClientRect();
+        const cx     = rect.left + rect.width  / 2;
+        const cy     = rect.top  + rect.height / 2;
+        const dx     = (e.clientX - cx) / (rect.width  / 2);
+        const dy     = (e.clientY - cy) / (rect.height / 2);
+        const tiltX  = dy * -8;
+        const tiltY  = dx *  8;
+
+        card.style.transform = `perspective(900px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`;
+        card.style.transition = 'transform 0.1s ease-out';
+
+        if (shine) {
+          const shineX = ((e.clientX - rect.left) / rect.width)  * 100;
+          const shineY = ((e.clientY - rect.top)  / rect.height) * 100;
+          shine.style.background = `radial-gradient(circle at ${shineX}% ${shineY}%, rgba(249,115,22,0.18), transparent 65%)`;
+          shine.style.opacity = '1';
+        }
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform  = '';
+        card.style.transition = 'transform 0.5s var(--ease)';
+        if (shine) shine.style.opacity = '0';
+      });
+    });
+  }
+}
+
+/* ── Magnetic Buttons ───────────────────────────────────────────────────────── */
+
+class MagneticButton {
+  constructor() {
+    document.querySelectorAll<HTMLElement>('[data-magnetic]').forEach(btn => {
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const cx   = rect.left + rect.width  / 2;
+        const cy   = rect.top  + rect.height / 2;
+        const dx   = (e.clientX - cx) * 0.28;
+        const dy   = (e.clientY - cy) * 0.28;
+        btn.style.transform  = `translate(${dx}px, ${dy}px)`;
+        btn.style.transition = 'transform 0.15s ease-out';
+      });
+
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform  = '';
+        btn.style.transition = 'transform 0.5s var(--ease)';
+      });
+    });
+  }
+}
+
+/* ── Hero Terminal (auto-looping) ───────────────────────────────────────────── */
+
+class HeroTerminal {
+  private timers: ReturnType<typeof setTimeout>[] = [];
+  private running = false;
+
+  private static readonly LINES: readonly TerminalLine[] = [
+    { text: '> alarm: WorkSpaces-EC2-CPUHigh',       cls: 'cmd'  },
+    { text: '  ↳ pulling ticket metadata ...  ✓',    cls: 'ok'   },
+    { text: '  ↳ setting up read-only creds .. ✓',   cls: 'ok'   },
+    { text: '  ↳ checking CloudWatch alarms .. ✓',   cls: 'ok'   },
+    { text: '  ↳ correlating EMF metrics .....✓',    cls: 'ok'   },
+    { text: '  ↳ tracing logs by request ID . ✓',    cls: 'ok'   },
+    { text: '✓ summary posted  [10 min, was 45]',     cls: 'done' },
+  ] as const;
+
+  private static readonly LINE_MS  = 380;
+  private static readonly PAUSE_MS = 2200;
+
+  constructor(private readonly bodyEl: HTMLElement) {
+    this.cycle();
+  }
+
+  private cycle(): void {
+    if (this.running) return;
+    this.running = true;
+    this.bodyEl.innerHTML = '';
+
+    HeroTerminal.LINES.forEach((line, i) => {
+      const t = setTimeout(() => {
+        const span       = document.createElement('span');
+        span.className   = `terminal-line ${line.cls}`;
+        span.textContent = line.text;
+        this.bodyEl.appendChild(span);
+      }, i * HeroTerminal.LINE_MS);
+      this.timers.push(t);
+    });
+
+    const restart = setTimeout(() => {
+      this.running = false;
+      this.timers  = [];
+      this.bodyEl.innerHTML = '';
+      this.cycle();
+    }, HeroTerminal.LINES.length * HeroTerminal.LINE_MS + HeroTerminal.PAUSE_MS);
+
+    this.timers.push(restart);
+  }
+}
+
+/* ── Project Terminal (hover) ───────────────────────────────────────────────── */
+
+class ProjectTerminal {
+  private timers: ReturnType<typeof setTimeout>[] = [];
+  private running = false;
+
+  private static readonly LINES: readonly TerminalLine[] = [
+    { text: '> alarm: WorkSpaces-EC2-CPUHigh',       cls: 'cmd'  },
+    { text: '  ↳ pulling ticket metadata ...  ✓',    cls: 'ok'   },
+    { text: '  ↳ setting up read-only creds .. ✓',   cls: 'ok'   },
+    { text: '  ↳ checking CloudWatch alarms .. ✓',   cls: 'ok'   },
+    { text: '  ↳ correlating EMF metrics ..... ✓',   cls: 'ok'   },
+    { text: '  ↳ tracing logs by request ID .. ✓',   cls: 'ok'   },
+    { text: '✓ summary posted  [10 min, was 45]',     cls: 'done' },
+  ] as const;
+
+  private static readonly LINE_MS = 320;
+
+  constructor(bodyElId: string, cardId: string) {
+    const body = document.getElementById(bodyElId);
+    const card = document.getElementById(cardId);
+    if (!body || !card) return;
+
+    this.reset(body);
+    card.addEventListener('mouseenter', () => this.run(body));
+    card.addEventListener('mouseleave', () => this.reset(body));
+  }
+
+  private run(body: HTMLElement): void {
+    if (this.running) return;
+    this.running  = true;
+    body.innerHTML = '';
+
+    ProjectTerminal.LINES.forEach((line, i) => {
+      const t = setTimeout(() => {
+        const span       = document.createElement('span');
+        span.className   = `terminal-line ${line.cls}`;
+        span.textContent = line.text;
+        body.appendChild(span);
+      }, i * ProjectTerminal.LINE_MS);
+      this.timers.push(t);
+    });
+
+    const end = setTimeout(() => { this.running = false; },
+      ProjectTerminal.LINES.length * ProjectTerminal.LINE_MS + 1800);
+    this.timers.push(end);
+  }
+
+  private reset(body: HTMLElement): void {
+    this.timers.forEach(clearTimeout);
+    this.timers    = [];
+    this.running   = false;
+    body.innerHTML = '<span class="terminal-line info">Hover to run a live demo...</span>';
+  }
 }
 
 /* ── Particle System ────────────────────────────────────────────────────────── */
@@ -27,34 +248,31 @@ class Particle {
   vx: number;
   vy: number;
   readonly radius: number;
-  readonly isCyan: boolean;
+  readonly isOrange: boolean;
 
   constructor(private canvasWidth: number, private canvasHeight: number) {
-    const speed = 0.15 + Math.random() * 0.35;
+    const speed = 0.12 + Math.random() * 0.28;
     const angle = Math.random() * Math.PI * 2;
-    this.x      = Math.random() * canvasWidth;
-    this.y      = Math.random() * canvasHeight;
-    this.vx     = Math.cos(angle) * speed;
-    this.vy     = Math.sin(angle) * speed;
-    this.radius = 1.2 + Math.random() * 1.4;
-    this.isCyan = Math.random() > 0.45;
+    this.x        = Math.random() * canvasWidth;
+    this.y        = Math.random() * canvasHeight;
+    this.vx       = Math.cos(angle) * speed;
+    this.vy       = Math.sin(angle) * speed;
+    this.radius   = 1.0 + Math.random() * 1.2;
+    this.isOrange = Math.random() > 0.5;
   }
 
-  update(mouse: MousePosition): void {
+  update(mx: number | null, my: number | null): void {
     this.x += this.vx;
     this.y += this.vy;
-
     if (this.x < 0 || this.x > this.canvasWidth)  this.vx *= -1;
     if (this.y < 0 || this.y > this.canvasHeight)  this.vy *= -1;
-
-    if (mouse.x !== null && mouse.y !== null) {
-      const dx   = this.x - mouse.x;
-      const dy   = this.y - mouse.y;
-      const dist = Math.hypot(dx, dy);
-      if (dist < 130 && dist > 0) {
-        const force = (130 - dist) / 130;
-        this.x += (dx / dist) * force * 2.5;
-        this.y += (dy / dist) * force * 2.5;
+    if (mx !== null && my !== null) {
+      const dx = this.x - mx, dy = this.y - my;
+      const d  = Math.hypot(dx, dy);
+      if (d < 120 && d > 0) {
+        const f = (120 - d) / 120;
+        this.x += (dx / d) * f * 2.2;
+        this.y += (dy / d) * f * 2.2;
       }
     }
   }
@@ -62,39 +280,32 @@ class Particle {
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-    ctx.fillStyle = this.isCyan
-      ? 'rgba(34,211,238,0.75)'
-      : 'rgba(167,139,250,0.75)';
+    ctx.fillStyle = this.isOrange
+      ? 'rgba(249,115,22,0.7)'
+      : 'rgba(139,92,246,0.7)';
     ctx.fill();
   }
 
-  resize(width: number, height: number): void {
-    this.canvasWidth  = width;
-    this.canvasHeight = height;
-  }
+  resize(w: number, h: number): void { this.canvasWidth = w; this.canvasHeight = h; }
 }
 
 class ParticleSystem {
   private readonly canvas: HTMLCanvasElement;
   private readonly ctx: CanvasRenderingContext2D;
   private particles: Particle[] = [];
-  private mouse: MousePosition = { x: null, y: null };
-  private readonly CONNECTION_DISTANCE = 115;
+  private mx: number | null = null;
+  private my: number | null = null;
 
   constructor(canvasId: string) {
     const canvas = document.getElementById(canvasId);
-    if (!(canvas instanceof HTMLCanvasElement)) {
-      throw new Error(`Canvas element #${canvasId} not found`);
-    }
+    if (!(canvas instanceof HTMLCanvasElement)) throw new Error(`#${canvasId} not found`);
     const ctx = canvas.getContext('2d');
-    if (!ctx) throw new Error('Could not get 2D context');
-
+    if (!ctx) throw new Error('No 2D context');
     this.canvas = canvas;
     this.ctx    = ctx;
-
     this.resize();
-    this.buildParticles();
-    this.bindEvents();
+    this.build();
+    this.bind();
     this.tick();
   }
 
@@ -103,208 +314,116 @@ class ParticleSystem {
     this.canvas.height = window.innerHeight;
   }
 
-  private buildParticles(): void {
-    const count = Math.min(90, Math.floor(
-      (this.canvas.width * this.canvas.height) / 12_000
-    ));
+  private build(): void {
+    const count = Math.min(80, Math.floor((this.canvas.width * this.canvas.height) / 14_000));
     this.particles = Array.from({ length: count }, () =>
-      new Particle(this.canvas.width, this.canvas.height)
-    );
+      new Particle(this.canvas.width, this.canvas.height));
   }
 
-  private bindEvents(): void {
+  private bind(): void {
     window.addEventListener('resize', () => {
       this.resize();
       this.particles.forEach(p => p.resize(this.canvas.width, this.canvas.height));
     });
-    document.addEventListener('mousemove', (e) => {
-      this.mouse = { x: e.clientX, y: e.clientY };
-    });
-    document.addEventListener('mouseleave', () => {
-      this.mouse = { x: null, y: null };
-    });
+    document.addEventListener('mousemove', (e) => { this.mx = e.clientX; this.my = e.clientY; });
+    document.addEventListener('mouseleave', () => { this.mx = null; this.my = null; });
   }
 
   private drawConnections(): void {
-    const { particles, ctx, CONNECTION_DISTANCE: maxDist } = this;
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const a = particles[i]!;
-        const b = particles[j]!;
-        const dist = Math.hypot(a.x - b.x, a.y - b.y);
-        if (dist < maxDist) {
-          const alpha = (1 - dist / maxDist) * 0.22;
-          ctx.beginPath();
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(b.x, b.y);
-          ctx.strokeStyle = `rgba(34,211,238,${alpha})`;
-          ctx.lineWidth   = 0.7;
-          ctx.stroke();
+    const MAX = 110;
+    for (let i = 0; i < this.particles.length; i++) {
+      for (let j = i + 1; j < this.particles.length; j++) {
+        const a = this.particles[i]!;
+        const b = this.particles[j]!;
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (d < MAX) {
+          const alpha = (1 - d / MAX) * 0.18;
+          this.ctx.beginPath();
+          this.ctx.moveTo(a.x, a.y);
+          this.ctx.lineTo(b.x, b.y);
+          this.ctx.strokeStyle = `rgba(249,115,22,${alpha})`;
+          this.ctx.lineWidth   = 0.6;
+          this.ctx.stroke();
         }
       }
     }
   }
 
   private tick(): void {
-    const { ctx, canvas } = this;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    this.particles.forEach(p => { p.update(this.mouse); p.draw(ctx); });
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.particles.forEach(p => { p.update(this.mx, this.my); p.draw(this.ctx); });
     this.drawConnections();
     requestAnimationFrame(() => this.tick());
-  }
-}
-
-/* ── Terminal Animation ─────────────────────────────────────────────────────── */
-
-class TerminalAnimation {
-  private timers: ReturnType<typeof setTimeout>[] = [];
-  private running = false;
-  private readonly bodyEl: HTMLElement;
-
-  private static readonly LINES: readonly TerminalLine[] = [
-    { text: '> alarm: WorkSpaces-EC2-CPUHigh',            cls: 'cmd'  },
-    { text: '  ↳ pulling ticket metadata ...    ✓',       cls: 'ok'   },
-    { text: '  ↳ setting up read-only creds ... ✓',       cls: 'ok'   },
-    { text: '  ↳ checking CloudWatch alarms ... ✓',       cls: 'ok'   },
-    { text: '  ↳ correlating EMF metrics ...    ✓',       cls: 'ok'   },
-    { text: '  ↳ tracing logs by request ID ... ✓',       cls: 'ok'   },
-    { text: '✓ summary posted  [10 min, was 45]',          cls: 'done' },
-  ] as const;
-
-  private static readonly LINE_DELAY_MS = 320;
-  private static readonly IDLE_AFTER_MS =
-    TerminalAnimation.LINES.length * TerminalAnimation.LINE_DELAY_MS + 1800;
-
-  constructor(bodyElId: string, cardId: string) {
-    const body = document.getElementById(bodyElId);
-    const card = document.getElementById(cardId);
-    if (!body || !card) throw new Error('Terminal elements not found');
-
-    this.bodyEl = body;
-    this.reset();
-
-    card.addEventListener('mouseenter', () => this.run());
-    card.addEventListener('mouseleave', () => this.reset());
-  }
-
-  private run(): void {
-    if (this.running) return;
-    this.running  = true;
-    this.bodyEl.innerHTML = '';
-
-    TerminalAnimation.LINES.forEach((line, i) => {
-      const t = setTimeout(() => {
-        const span = document.createElement('span');
-        span.className   = `terminal-line ${line.cls}`;
-        span.textContent = line.text;
-        this.bodyEl.appendChild(span);
-      }, i * TerminalAnimation.LINE_DELAY_MS);
-      this.timers.push(t);
-    });
-
-    const loop = setTimeout(
-      () => { this.running = false; },
-      TerminalAnimation.IDLE_AFTER_MS
-    );
-    this.timers.push(loop);
-  }
-
-  private reset(): void {
-    this.timers.forEach(clearTimeout);
-    this.timers  = [];
-    this.running = false;
-    this.bodyEl.innerHTML =
-      '<span class="terminal-line info">Hover to run a live demo...</span>';
   }
 }
 
 /* ── Scroll Animations ──────────────────────────────────────────────────────── */
 
 function initScrollAnimations(): void {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
-      });
-    },
+  const io = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
     { threshold: 0.1 }
   );
-  document.querySelectorAll<HTMLElement>('.fade-up').forEach(el => observer.observe(el));
+  document.querySelectorAll<HTMLElement>('.fade-up').forEach(el => io.observe(el));
 }
 
 /* ── Stat Counters ──────────────────────────────────────────────────────────── */
 
-function animateCounter(config: StatConfig): void {
-  const { el, target, duration } = config;
-  const step = 16;
+function animateCounter(cfg: StatConfig): void {
+  const { el, target, duration } = cfg;
+  const step  = 16;
   const steps = duration / step;
   const inc   = target / steps;
   let val     = 0;
-
   const timer = setInterval(() => {
     val += inc;
-    if (val >= target) {
-      val = target;
-      clearInterval(timer);
-    }
+    if (val >= target) { val = target; clearInterval(timer); }
     el.textContent = String(Math.floor(val));
   }, step);
 }
 
 function initStatCounters(): void {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        const el     = entry.target as HTMLElement;
-        const target = parseInt(el.dataset['count'] ?? '', 10);
-        if (isNaN(target)) return;
-        animateCounter({ el, target, duration: 1200 });
-        observer.unobserve(el);
-      });
-    },
+  const io = new IntersectionObserver(
+    entries => entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el     = e.target as HTMLElement;
+      const target = parseInt(el.dataset['count'] ?? '', 10);
+      if (!isNaN(target)) animateCounter({ el, target, duration: 1200 });
+      io.unobserve(el);
+    }),
     { threshold: 0.6 }
   );
-  document.querySelectorAll<HTMLElement>('[data-count]').forEach(el => observer.observe(el));
+  document.querySelectorAll<HTMLElement>('[data-count]').forEach(el => io.observe(el));
 }
 
-/* ── Nav: Scroll Spy ────────────────────────────────────────────────────────── */
+/* ── Nav Scroll Spy ─────────────────────────────────────────────────────────── */
 
 function initScrollSpy(): void {
   const sections = document.querySelectorAll<HTMLElement>('section[id]');
-  const navLinks = document.querySelectorAll<HTMLAnchorElement>('.nav-links a');
-
+  const links    = document.querySelectorAll<HTMLAnchorElement>('.nav-links a');
   window.addEventListener('scroll', () => {
     let active = '';
-    sections.forEach(sec => {
-      if (window.scrollY >= sec.offsetTop - 90) active = sec.id;
-    });
-    navLinks.forEach(link => {
-      link.classList.toggle('active', link.getAttribute('href') === `#${active}`);
-    });
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 90) active = s.id; });
+    links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === `#${active}`));
   }, { passive: true });
 }
 
 /* ── Mobile Menu ────────────────────────────────────────────────────────────── */
 
 function initMobileMenu(): void {
-  const hamburger = document.getElementById('hamburger');
-  const navMobile = document.getElementById('nav-mobile');
-  if (!hamburger || !navMobile) return;
-
-  hamburger.addEventListener('click', () => {
-    const open = navMobile.classList.toggle('open');
-    hamburger.classList.toggle('open', open);
-    hamburger.setAttribute('aria-expanded', String(open));
+  const btn    = document.getElementById('hamburger');
+  const mobile = document.getElementById('nav-mobile');
+  if (!btn || !mobile) return;
+  btn.addEventListener('click', () => {
+    const open = mobile.classList.toggle('open');
+    btn.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', String(open));
   });
-
-  navMobile.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      navMobile.classList.remove('open');
-      hamburger.classList.remove('open');
-      hamburger.setAttribute('aria-expanded', 'false');
-    });
-  });
+  mobile.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    mobile.classList.remove('open');
+    btn.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+  }));
 }
 
 /* ── Email Copy ─────────────────────────────────────────────────────────────── */
@@ -312,34 +431,28 @@ function initMobileMenu(): void {
 function initEmailCopy(): void {
   const btn = document.getElementById('copy-email');
   if (!(btn instanceof HTMLButtonElement)) return;
-
   const email = btn.dataset['email'] ?? '';
   const label = btn.querySelector<HTMLElement>('.email-copy');
   if (!label) return;
-
   btn.addEventListener('click', () => {
     navigator.clipboard.writeText(email).then(() => {
-      label.textContent        = 'Copied!';
-      label.style.background   = 'rgba(74,222,128,0.15)';
-      label.style.color        = '#4ade80';
-      label.style.borderColor  = 'rgba(74,222,128,0.3)';
-
+      label.textContent       = 'Copied!';
+      label.style.background  = 'rgba(74,222,128,0.15)';
+      label.style.color       = '#4ade80';
+      label.style.borderColor = 'rgba(74,222,128,0.3)';
       setTimeout(() => {
         label.textContent       = 'Copy';
         label.style.background  = '';
         label.style.color       = '';
         label.style.borderColor = '';
       }, 2200);
-    }).catch(() => {
-      window.location.href = `mailto:${email}`;
-    });
+    }).catch(() => { window.location.href = `mailto:${email}`; });
   });
 }
 
 /* ── Smooth Scroll ──────────────────────────────────────────────────────────── */
 
 function initSmoothScroll(): void {
-  const NAV_OFFSET = 72;
   document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(a => {
     a.addEventListener('click', (e) => {
       const href   = a.getAttribute('href');
@@ -347,9 +460,20 @@ function initSmoothScroll(): void {
       const target = document.querySelector<HTMLElement>(href);
       if (!target) return;
       e.preventDefault();
-      window.scrollTo({ top: target.offsetTop - NAV_OFFSET, behavior: 'smooth' });
+      window.scrollTo({ top: target.offsetTop - 72, behavior: 'smooth' });
     });
   });
+}
+
+/* ── Hero Parallax ──────────────────────────────────────────────────────────── */
+
+function initHeroParallax(): void {
+  const right = document.getElementById('hero-right');
+  if (!right) return;
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    right.style.transform = `translateY(${y * 0.06}px)`;
+  }, { passive: true });
 }
 
 /* ── Typed.js ───────────────────────────────────────────────────────────────── */
@@ -362,11 +486,11 @@ function initTyped(): void {
       'AWS Cloud Infrastructure Engineer',
       'Applied AI Engineer',
     ],
-    typeSpeed:   52,
-    backSpeed:   28,
-    backDelay:   2200,
-    loop:        true,
-    cursorChar:  '|',
+    typeSpeed:      52,
+    backSpeed:      28,
+    backDelay:      2200,
+    loop:           true,
+    cursorChar:     '|',
     smartBackspace: false,
   });
 }
@@ -374,8 +498,18 @@ function initTyped(): void {
 /* ── Bootstrap ──────────────────────────────────────────────────────────────── */
 
 function init(): void {
+  new CustomCursor();
+  new ScrollProgress();
+  new CardTilt();
+  new MagneticButton();
+
   new ParticleSystem('particle-canvas');
-  new TerminalAnimation('ws-terminal-body', 'proj-ws');
+
+  const heroBody = document.getElementById('hero-terminal-body');
+  if (heroBody) new HeroTerminal(heroBody);
+
+  new ProjectTerminal('ws-terminal-body', 'proj-ws');
+
   initTyped();
   initScrollAnimations();
   initStatCounters();
@@ -383,6 +517,7 @@ function init(): void {
   initMobileMenu();
   initEmailCopy();
   initSmoothScroll();
+  initHeroParallax();
 }
 
 document.readyState === 'loading'
