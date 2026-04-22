@@ -522,6 +522,7 @@ body:has(button:hover) .cursor-ring {
   margin-top: 4px;
 }
 .stat-label { font-size: 13px; color: var(--muted); font-weight: 500; margin-top: 6px; }
+.stat-number.static { font-size: clamp(22px, 3.5vw, 34px); }
 .about-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
