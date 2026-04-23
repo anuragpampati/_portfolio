@@ -975,6 +975,7 @@ body:has(button:hover) .cursor-ring {
   border: 1px solid rgba(249,115,22,0.25);
   color: var(--orange);
 }
+.cal-book-btn { font-size: 14px; padding: 12px 22px; }
 .contact-divider {
   display: flex;
   align-items: center;
