@@ -473,8 +473,15 @@ function initContactForm(): void {
     try {
       const data = new FormData(form);
       const res  = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        body:   data,
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          access_key: 'f757b6dc-9331-40a3-a16f-2d6c944e2aba',
+          name:        data.get('name'),
+          email:       data.get('email'),
+          message:     data.get('message'),
+          subject:     'Portfolio Contact — New Message',
+        }),
       });
       const json = await res.json() as { success: boolean; message?: string };
 
