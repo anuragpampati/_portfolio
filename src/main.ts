@@ -450,6 +450,54 @@ function initEmailCopy(): void {
   });
 }
 
+/* ── Contact Form ───────────────────────────────────────────────────────────── */
+
+function initContactForm(): void {
+  const form     = document.getElementById('contact-form') as HTMLFormElement | null;
+  const submitBtn = document.getElementById('form-submit') as HTMLButtonElement | null;
+  const feedback  = document.getElementById('form-feedback') as HTMLElement | null;
+  if (!form || !submitBtn || !feedback) return;
+
+  const labelEl   = submitBtn.querySelector<HTMLElement>('.submit-label');
+  const sendingEl = submitBtn.querySelector<HTMLElement>('.submit-sending');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    submitBtn.disabled = true;
+    labelEl?.setAttribute('hidden', '');
+    sendingEl?.removeAttribute('hidden');
+    feedback.hidden = true;
+    feedback.className = 'form-feedback';
+
+    try {
+      const data = new FormData(form);
+      const res  = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body:   data,
+      });
+      const json = await res.json() as { success: boolean; message?: string };
+
+      if (json.success) {
+        feedback.textContent = '✓ Message sent! I\'ll get back to you soon.';
+        feedback.classList.add('success');
+        form.reset();
+      } else {
+        feedback.textContent = json.message ?? 'Something went wrong. Please try again.';
+        feedback.classList.add('error');
+      }
+    } catch {
+      feedback.textContent = 'Network error. Please try again or email directly.';
+      feedback.classList.add('error');
+    } finally {
+      feedback.hidden = false;
+      submitBtn.disabled = false;
+      labelEl?.removeAttribute('hidden');
+      sendingEl?.setAttribute('hidden', '');
+    }
+  });
+}
+
 /* ── Smooth Scroll ──────────────────────────────────────────────────────────── */
 
 function initSmoothScroll(): void {
@@ -510,6 +558,7 @@ function init(): void {
 
   new ProjectTerminal('ws-terminal-body', 'proj-ws');
 
+  initContactForm();
   initTyped();
   initScrollAnimations();
   initStatCounters();

@@ -392,6 +392,37 @@
     <div class="contact-inner fade-up">
       <h2 class="contact-heading">Let's build something.</h2>
       <p class="contact-sub">Open to SDE II and Applied AI / LLM Engineer roles in Seattle or remote. If you're working on something that takes AI reliability seriously, I'd like to hear about it.</p>
+
+      <!-- Contact Form -->
+      <form class="contact-form" id="contact-form" novalidate>
+        <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_KEY_HERE">
+        <input type="hidden" name="subject" value="Portfolio Contact — New Message">
+        <input type="hidden" name="from_name" value="Portfolio Site">
+        <input type="checkbox" name="botcheck" style="display:none">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cf-name">Name</label>
+            <input type="text" id="cf-name" name="name" placeholder="Your name" required autocomplete="name">
+          </div>
+          <div class="form-group">
+            <label for="cf-email">Email</label>
+            <input type="email" id="cf-email" name="email" placeholder="you@example.com" required autocomplete="email">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="cf-message">Message</label>
+          <textarea id="cf-message" name="message" rows="5" placeholder="What's on your mind?" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary form-submit" id="form-submit" data-magnetic>
+          <span class="submit-label">Send Message</span>
+          <span class="submit-sending" hidden>Sending…</span>
+        </button>
+        <div class="form-feedback" id="form-feedback" hidden></div>
+      </form>
+
+      <div class="contact-divider"><span>or reach out directly</span></div>
+
       <div class="contact-links">
         <button class="contact-email" id="copy-email" data-email="anuragpampati01@gmail.com">
           <span class="email-icon">✉</span>
