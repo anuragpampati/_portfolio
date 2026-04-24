@@ -655,71 +655,162 @@ body:has(button:hover) .cursor-ring {
   margin-bottom: 18px;
 }
 
-/* ── Pipeline Visualization ────────────────────────────────────────────────── */
-.pipeline-flow {
+/* ── Pipeline V2 ───────────────────────────────────────────────────────────── */
+.pipeline-v2 { margin-bottom: 20px; }
+.pv2-steps {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 0;
   flex-wrap: wrap;
+  row-gap: 12px;
 }
-.pipeline-stage {
+.pv2-step {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--card-border);
+  gap: 10px;
+  padding: 10px 14px;
   border-radius: 10px;
-  padding: 12px 14px;
-  min-width: 88px;
+  border: 1px solid var(--card-border);
+  background: rgba(255,255,255,0.03);
   transition: all 0.35s var(--ease);
+  flex-shrink: 0;
+}
+.pv2-step.pv2-active {
+  border-color: rgba(249,115,22,0.55);
+  background: rgba(249,115,22,0.08);
+  box-shadow: 0 0 16px rgba(249,115,22,0.15);
+}
+.pv2-step.pv2-human.pv2-active {
+  border-color: rgba(139,92,246,0.55);
+  background: rgba(139,92,246,0.08);
+  box-shadow: 0 0 16px rgba(139,92,246,0.15);
+}
+.pv2-step.pv2-done.pv2-active {
+  border-color: rgba(74,222,128,0.55);
+  background: rgba(74,222,128,0.08);
+  box-shadow: 0 0 16px rgba(74,222,128,0.15);
+}
+.pv2-dot {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--card-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  color: var(--subtle);
+  flex-shrink: 0;
+  transition: all 0.35s;
+  font-family: var(--font-mono);
+}
+.pv2-active .pv2-dot {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(249,115,22,0.4);
+}
+.pv2-human.pv2-active .pv2-dot { background: var(--violet); border-color: var(--violet); box-shadow: 0 0 10px rgba(139,92,246,0.4); }
+.pv2-done.pv2-active .pv2-dot  { background: var(--green);  border-color: var(--green);  box-shadow: 0 0 10px rgba(74,222,128,0.4); }
+.pv2-title { font-size: 12px; font-weight: 600; color: var(--text); }
+.pv2-sub   { font-size: 10px; color: var(--subtle); margin-top: 1px; }
+
+.pv2-connector {
+  width: 28px; height: 2px;
+  background: var(--card-border);
+  flex-shrink: 0;
+  transition: background 0.35s;
   position: relative;
 }
-.pipeline-stage.ps-active {
-  border-color: rgba(249,115,22,0.6);
-  background: rgba(249,115,22,0.1);
-  box-shadow: 0 0 18px rgba(249,115,22,0.2);
-  transform: translateY(-3px);
-}
-.pipeline-stage.ps-done-active {
-  border-color: rgba(74,222,128,0.6);
-  background: rgba(74,222,128,0.1);
-  box-shadow: 0 0 18px rgba(74,222,128,0.2);
-  transform: translateY(-3px);
-}
-.pipeline-stage.ps-human.ps-active {
-  border-color: rgba(139,92,246,0.6);
-  background: rgba(139,92,246,0.1);
-  box-shadow: 0 0 18px rgba(139,92,246,0.2);
-}
-.ps-icon { font-size: 18px; line-height: 1; }
-.ps-label { font-size: 11px; font-weight: 600; color: var(--text); text-align: center; }
-.ps-sub { font-size: 10px; color: var(--subtle); text-align: center; }
-.pipeline-arrow {
-  color: var(--subtle);
-  font-size: 16px;
+.pv2-connector.conn-active { background: var(--orange); }
+
+/* Loop block */
+.pv2-loop-block {
+  border: 1.5px dashed rgba(249,115,22,0.25);
+  border-radius: 12px;
+  padding: 12px 14px 10px;
+  position: relative;
   flex-shrink: 0;
-  transition: color 0.3s;
+  transition: border-color 0.35s, box-shadow 0.35s;
 }
-.pipeline-arrow.arr-active { color: var(--orange); }
-.pipeline-parallel {
+.pv2-loop-block.pv2-loop-active {
+  border-color: rgba(249,115,22,0.6);
+  box-shadow: 0 0 20px rgba(249,115,22,0.1);
+}
+.pv2-loop-label {
+  position: absolute;
+  top: -9px; left: 12px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--subtle);
+  background: var(--surface);
+  padding: 0 6px;
+  transition: color 0.35s;
+}
+.pv2-loop-active .pv2-loop-label { color: var(--orange); }
+.pv2-loop-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.pv2-loop-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  background: rgba(255,255,255,0.03);
+  transition: all 0.3s;
+  min-width: 64px;
+}
+.pv2-loop-step.ls-active {
+  border-color: rgba(249,115,22,0.5);
+  background: rgba(249,115,22,0.08);
+}
+.pv2-ls-icon  { font-size: 16px; line-height: 1; }
+.pv2-ls-label { font-size: 11px; font-weight: 600; color: var(--text); }
+.pv2-ls-sub   { font-size: 9px; color: var(--subtle); }
+.pv2-loop-arrow { color: var(--subtle); font-size: 14px; flex-shrink: 0; transition: color 0.3s; }
+.pv2-loop-active .pv2-loop-arrow { color: var(--orange); }
+.pv2-loop-parallel {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
 }
-.ps-parallel-label {
-  font-size: 9px;
-  font-weight: 600;
+.pv2-parallel-tag {
+  font-size: 8px;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--subtle);
+  background: rgba(255,255,255,0.04);
+  padding: 2px 6px;
+  border-radius: 3px;
 }
-.ps-parallel-top, .ps-parallel-bot {
-  min-width: 76px;
-  padding: 8px 10px;
+.pv2-loop-feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 4px;
 }
+.pv2-fb-line {
+  font-size: 9px;
+  color: var(--subtle);
+  font-family: var(--font-mono);
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.03);
+  border-left: 2px solid rgba(249,115,22,0.2);
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+.pv2-fb-clean { border-left-color: rgba(74,222,128,0.2); }
+.pv2-loop-active .pv2-fb-line { color: var(--muted); border-left-color: rgba(249,115,22,0.5); }
+.pv2-loop-active .pv2-fb-clean { color: var(--green); border-left-color: rgba(74,222,128,0.5); }
 
 /* Flow diagram */
 .project-flow {
