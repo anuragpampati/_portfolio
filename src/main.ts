@@ -240,6 +240,84 @@ class ProjectTerminal {
   }
 }
 
+/* ── Pipeline Animation ─────────────────────────────────────────────────────── */
+
+class PipelineAnimation {
+  private timers: ReturnType<typeof setTimeout>[] = [];
+  private running = false;
+
+  private static readonly TERMINAL_LINES: readonly TerminalLine[] = [
+    { text: '> pipeline.sh --task "Add retry logic" --max-iter 3', cls: 'cmd'  },
+    { text: '  ↳ research agent reading docs ...        ✓',         cls: 'ok'   },
+    { text: '  ↳ task_spec.md generated ...             ✓',         cls: 'ok'   },
+    { text: '  ↳ human checkpoint: spec approved ...    ✓',         cls: 'ok'   },
+    { text: '  ↳ coder: implementing changes (iter 1) . ✓',         cls: 'ok'   },
+    { text: '  ↳ tester + reviewer running (parallel) . ✓',         cls: 'ok'   },
+    { text: '  ↳ feedback: clean, no issues found ...   ✓',         cls: 'ok'   },
+    { text: '✓ CR-8472 ready for review  [4 min total]',             cls: 'done' },
+  ] as const;
+
+  private static readonly STAGE_DELAYS = [0, 600, 1300, 2100, 2900, 3900, 5000];
+
+  constructor(private readonly card: HTMLElement) {
+    card.addEventListener('mouseenter', () => this.run());
+    card.addEventListener('mouseleave', () => this.reset());
+  }
+
+  private run(): void {
+    if (this.running) return;
+    this.running = true;
+
+    const body = document.getElementById('pipeline-terminal-body');
+    if (body) body.innerHTML = '';
+
+    const stages  = this.card.querySelectorAll<HTMLElement>('.pipeline-stage');
+    const arrows  = this.card.querySelectorAll<HTMLElement>('.pipeline-arrow');
+    const parallel = this.card.querySelector<HTMLElement>('.pipeline-parallel');
+
+    PipelineAnimation.STAGE_DELAYS.forEach((delay, i) => {
+      const t = setTimeout(() => {
+        stages.forEach(s => s.classList.remove('ps-active', 'ps-done-active'));
+        if (i < 4) {
+          stages[i]?.classList.add('ps-active');
+          arrows[i > 0 ? i - 1 : 0]?.classList.add('arr-active');
+        } else if (i === 4) {
+          parallel?.querySelectorAll<HTMLElement>('.pipeline-stage').forEach(s => s.classList.add('ps-active'));
+          arrows[3]?.classList.add('arr-active');
+        } else {
+          stages[stages.length - 1]?.classList.add('ps-done-active');
+          arrows[arrows.length - 1]?.classList.add('arr-active');
+        }
+
+        if (body && i < PipelineAnimation.TERMINAL_LINES.length) {
+          const span       = document.createElement('span');
+          span.className   = `terminal-line ${PipelineAnimation.TERMINAL_LINES[i]!.cls}`;
+          span.textContent = PipelineAnimation.TERMINAL_LINES[i]!.text;
+          body.appendChild(span);
+        }
+      }, delay);
+      this.timers.push(t);
+    });
+
+    const end = setTimeout(() => { this.running = false; }, 6500);
+    this.timers.push(end);
+  }
+
+  private reset(): void {
+    this.timers.forEach(clearTimeout);
+    this.timers  = [];
+    this.running = false;
+
+    this.card.querySelectorAll<HTMLElement>('.pipeline-stage')
+      .forEach(s => s.classList.remove('ps-active', 'ps-done-active'));
+    this.card.querySelectorAll<HTMLElement>('.pipeline-arrow')
+      .forEach(a => a.classList.remove('arr-active'));
+
+    const body = document.getElementById('pipeline-terminal-body');
+    if (body) body.innerHTML = '<span class="terminal-line info">Hover to run a live demo...</span>';
+  }
+}
+
 /* ── Particle System ────────────────────────────────────────────────────────── */
 
 class Particle {
@@ -564,6 +642,9 @@ function init(): void {
   if (heroBody) new HeroTerminal(heroBody);
 
   new ProjectTerminal('ws-terminal-body', 'proj-ws');
+
+  const pipelineCard = document.getElementById('proj-pipeline');
+  if (pipelineCard) new PipelineAnimation(pipelineCard);
 
   initContactForm();
   initTyped();

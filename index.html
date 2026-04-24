@@ -207,6 +207,91 @@
         </div>
       </div>
 
+      <!-- AI Code Delivery Pipeline -->
+      <div class="bento-card bento-featured fade-up" id="proj-pipeline" data-tilt style="--delay:0.1s">
+        <div class="tilt-shine"></div>
+        <div class="project-badges">
+          <span class="badge badge-prod">⬤ PRODUCTION</span>
+          <span class="badge badge-company">Amazon Internal</span>
+        </div>
+        <h3 class="project-name">AI Agent Orchestration Pipeline</h3>
+        <p class="project-desc">Multi-agent pipeline that automates the full software delivery lifecycle — research, coding, testing, and review — coordinated by specialized AI agents with a human-in-the-loop checkpoint. Input a task description, get back a reviewed CR ready for approval.</p>
+
+        <!-- Pipeline visualization -->
+        <div class="pipeline-flow" id="pipeline-flow">
+          <div class="pipeline-stage" data-stage="0">
+            <div class="ps-icon">📋</div>
+            <div class="ps-label">Task Input</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-stage" data-stage="1">
+            <div class="ps-icon">🔍</div>
+            <div class="ps-label">Research Agent</div>
+            <div class="ps-sub">task_spec.md</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-stage ps-human" data-stage="2">
+            <div class="ps-icon">👤</div>
+            <div class="ps-label">Human Review</div>
+            <div class="ps-sub">checkpoint</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-stage" data-stage="3">
+            <div class="ps-icon">⚙️</div>
+            <div class="ps-label">Coder Agent</div>
+            <div class="ps-sub">implements CR</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-parallel" data-stage="4">
+            <div class="pipeline-stage ps-parallel-top">
+              <div class="ps-icon">🧪</div>
+              <div class="ps-label">Tester</div>
+            </div>
+            <div class="ps-parallel-label">parallel</div>
+            <div class="pipeline-stage ps-parallel-bot">
+              <div class="ps-icon">👁️</div>
+              <div class="ps-label">Reviewer</div>
+            </div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-stage ps-done" data-stage="5">
+            <div class="ps-icon">✅</div>
+            <div class="ps-label">CR Ready</div>
+            <div class="ps-sub">for approval</div>
+          </div>
+        </div>
+
+        <!-- Terminal -->
+        <div class="project-terminal" id="pipeline-terminal">
+          <div class="terminal-header">
+            <span class="terminal-dot red"></span><span class="terminal-dot yellow"></span><span class="terminal-dot green"></span>
+            <span class="terminal-title">pipeline.sh</span>
+          </div>
+          <div class="terminal-body" id="pipeline-terminal-body">
+            <span class="terminal-line info">Hover to run a live demo...</span>
+          </div>
+        </div>
+
+        <div class="project-metrics">
+          <div class="metric">
+            <div class="metric-values"><span class="metric-before">hours</span><span class="metric-arrow">→</span><span class="metric-after">mins</span></div>
+            <div class="metric-label">Review Cycles</div>
+          </div>
+          <div class="metric">
+            <div class="metric-values"><span class="metric-after">4</span></div>
+            <div class="metric-label">Specialized Agents</div>
+          </div>
+          <div class="metric">
+            <div class="metric-values"><span class="metric-after">0</span></div>
+            <div class="metric-label">Infra Required</div>
+          </div>
+        </div>
+        <div class="project-tags">
+          <span>Multi-Agent</span><span>Kiro CLI</span><span>Bash</span>
+          <span>AI Orchestration</span><span>Human-in-the-Loop</span><span>Parallel Execution</span>
+        </div>
+      </div>
+
       <!-- AskSQL -->
       <div class="bento-card fade-up" style="--delay:0.1s" data-tilt>
         <div class="tilt-shine"></div>

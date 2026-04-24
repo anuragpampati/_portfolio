@@ -655,6 +655,72 @@ body:has(button:hover) .cursor-ring {
   margin-bottom: 18px;
 }
 
+/* ── Pipeline Visualization ────────────────────────────────────────────────── */
+.pipeline-flow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.pipeline-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  min-width: 88px;
+  transition: all 0.35s var(--ease);
+  position: relative;
+}
+.pipeline-stage.ps-active {
+  border-color: rgba(249,115,22,0.6);
+  background: rgba(249,115,22,0.1);
+  box-shadow: 0 0 18px rgba(249,115,22,0.2);
+  transform: translateY(-3px);
+}
+.pipeline-stage.ps-done-active {
+  border-color: rgba(74,222,128,0.6);
+  background: rgba(74,222,128,0.1);
+  box-shadow: 0 0 18px rgba(74,222,128,0.2);
+  transform: translateY(-3px);
+}
+.pipeline-stage.ps-human.ps-active {
+  border-color: rgba(139,92,246,0.6);
+  background: rgba(139,92,246,0.1);
+  box-shadow: 0 0 18px rgba(139,92,246,0.2);
+}
+.ps-icon { font-size: 18px; line-height: 1; }
+.ps-label { font-size: 11px; font-weight: 600; color: var(--text); text-align: center; }
+.ps-sub { font-size: 10px; color: var(--subtle); text-align: center; }
+.pipeline-arrow {
+  color: var(--subtle);
+  font-size: 16px;
+  flex-shrink: 0;
+  transition: color 0.3s;
+}
+.pipeline-arrow.arr-active { color: var(--orange); }
+.pipeline-parallel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.ps-parallel-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.ps-parallel-top, .ps-parallel-bot {
+  min-width: 76px;
+  padding: 8px 10px;
+}
+
 /* Flow diagram */
 .project-flow {
   display: flex;
