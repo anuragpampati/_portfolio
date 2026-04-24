@@ -180,71 +180,65 @@
         <p class="project-desc">Multi-agent pipeline that automates the full software delivery lifecycle — research, coding, testing, and review — coordinated by specialized AI agents with a human-in-the-loop checkpoint. Input a task description, get back a reviewed CR ready for approval.</p>
 
         <!-- Pipeline visualization -->
-        <div class="pipeline-v2" id="pipeline-flow">
+        <div class="pipeline-v3" id="pipeline-flow">
 
-          <!-- Linear steps -->
-          <div class="pv2-steps">
-            <div class="pv2-step" data-stage="0">
-              <div class="pv2-dot"><span>1</span></div>
-              <div class="pv2-info">
-                <div class="pv2-title">Task Input</div>
-                <div class="pv2-sub">task + links + context</div>
-              </div>
-            </div>
-            <div class="pv2-connector" data-conn="0"></div>
-            <div class="pv2-step" data-stage="1">
-              <div class="pv2-dot"><span>2</span></div>
-              <div class="pv2-info">
-                <div class="pv2-title">Research Agent</div>
-                <div class="pv2-sub">reads docs → task_spec.md</div>
-              </div>
-            </div>
-            <div class="pv2-connector" data-conn="1"></div>
-            <div class="pv2-step pv2-human" data-stage="2">
-              <div class="pv2-dot"><span>3</span></div>
-              <div class="pv2-info">
-                <div class="pv2-title">Human Checkpoint</div>
-                <div class="pv2-sub">engineer refines spec</div>
-              </div>
-            </div>
-            <div class="pv2-connector" data-conn="2"></div>
+          <div class="pv3-node" data-stage="0">
+            <div class="pv3-icon">📋</div>
+            <div class="pv3-label">Task Input</div>
+            <div class="pv3-sub">task + links</div>
+          </div>
 
-            <!-- Loop block -->
-            <div class="pv2-loop-block" data-stage="3">
-              <div class="pv2-loop-label">↺ feedback loop · max 3 iterations</div>
-              <div class="pv2-loop-inner">
-                <div class="pv2-loop-step" id="pv2-coder">
-                  <span class="pv2-ls-icon">⚙️</span>
-                  <span class="pv2-ls-label">Coder</span>
-                  <span class="pv2-ls-sub">implements CR</span>
+          <div class="pv3-conn" data-conn="0"><div class="pv3-dot"></div></div>
+
+          <div class="pv3-node" data-stage="1">
+            <div class="pv3-icon">🔍</div>
+            <div class="pv3-label">Research</div>
+            <div class="pv3-sub">task_spec.md</div>
+          </div>
+
+          <div class="pv3-conn" data-conn="1"><div class="pv3-dot"></div></div>
+
+          <div class="pv3-node pv3-human" data-stage="2">
+            <div class="pv3-icon">👤</div>
+            <div class="pv3-label">Human</div>
+            <div class="pv3-sub">checkpoint</div>
+          </div>
+
+          <div class="pv3-conn" data-conn="2"><div class="pv3-dot"></div></div>
+
+          <!-- Loop zone -->
+          <div class="pv3-loop-zone" data-stage="3">
+            <div class="pv3-loop-tag">↺ feedback loop · max 3×</div>
+            <div class="pv3-loop-row">
+              <div class="pv3-node pv3-ln" id="pv3-coder">
+                <div class="pv3-icon">⚙️</div>
+                <div class="pv3-label">Coder</div>
+              </div>
+              <div class="pv3-conn pv3-conn-sm" id="pv3-inner-conn"><div class="pv3-dot"></div></div>
+              <div class="pv3-par-col">
+                <div class="pv3-node pv3-ln" id="pv3-tester">
+                  <div class="pv3-icon">🧪</div>
+                  <div class="pv3-label">Tester</div>
                 </div>
-                <div class="pv2-loop-arrow">→</div>
-                <div class="pv2-loop-parallel">
-                  <div class="pv2-loop-step" id="pv2-tester">
-                    <span class="pv2-ls-icon">🧪</span>
-                    <span class="pv2-ls-label">Tester</span>
-                  </div>
-                  <div class="pv2-parallel-tag">parallel</div>
-                  <div class="pv2-loop-step" id="pv2-reviewer">
-                    <span class="pv2-ls-icon">👁️</span>
-                    <span class="pv2-ls-label">Reviewer</span>
-                  </div>
-                </div>
-                <div class="pv2-loop-feedback">
-                  <div class="pv2-fb-line">issues → feedback → coder</div>
-                  <div class="pv2-fb-line pv2-fb-clean">clean → exit loop ✓</div>
+                <div class="pv3-par-sep">parallel</div>
+                <div class="pv3-node pv3-ln" id="pv3-reviewer">
+                  <div class="pv3-icon">👁️</div>
+                  <div class="pv3-label">Reviewer</div>
                 </div>
               </div>
             </div>
-
-            <div class="pv2-connector" data-conn="3"></div>
-            <div class="pv2-step pv2-done" data-stage="4">
-              <div class="pv2-dot"><span>5</span></div>
-              <div class="pv2-info">
-                <div class="pv2-title">CR Ready</div>
-                <div class="pv2-sub">reviewed · approved · shipped</div>
-              </div>
+            <div class="pv3-back-row">
+              <div class="pv3-back-conn" id="pv3-back-conn"><div class="pv3-back-dot"></div></div>
+              <span class="pv3-back-label">issues → re-iterate</span>
             </div>
+          </div>
+
+          <div class="pv3-conn" data-conn="3"><div class="pv3-dot"></div></div>
+
+          <div class="pv3-node pv3-done" data-stage="4">
+            <div class="pv3-icon">✅</div>
+            <div class="pv3-label">CR Ready</div>
+            <div class="pv3-sub">reviewed · shipped</div>
           </div>
 
         </div>

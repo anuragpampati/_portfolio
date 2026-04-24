@@ -257,77 +257,87 @@ class PipelineAnimation {
     { text: '✓ CR-8472 ready for review  [4 min total]',             cls: 'done' },
   ] as const;
 
-  /* stage indices: 0=input, 1=research, 2=human, 3=loop, 4=cr-ready */
-  private static readonly STAGE_DELAYS = [0, 700, 1500, 2400, 4200];
-
   constructor(private readonly card: HTMLElement) {
     card.addEventListener('mouseenter', () => this.run());
     card.addEventListener('mouseleave', () => this.reset());
+  }
+
+  private activate(ms: number, fn: () => void): void {
+    this.timers.push(setTimeout(fn, ms));
   }
 
   private run(): void {
     if (this.running) return;
     this.running = true;
 
-    const body = document.getElementById('pipeline-terminal-body');
+    const body     = document.getElementById('pipeline-terminal-body');
     if (body) body.innerHTML = '';
 
-    const steps      = this.card.querySelectorAll<HTMLElement>('.pv2-step');
-    const connectors = this.card.querySelectorAll<HTMLElement>('.pv2-connector');
-    const loopBlock  = this.card.querySelector<HTMLElement>('.pv2-loop-block');
-    const coder      = document.getElementById('pv2-coder');
-    const tester     = document.getElementById('pv2-tester');
-    const reviewer   = document.getElementById('pv2-reviewer');
+    const nodes    = this.card.querySelectorAll<HTMLElement>('.pv3-node:not(.pv3-ln)');
+    const conns    = this.card.querySelectorAll<HTMLElement>('.pv3-conn[data-conn]');
+    const loopZone = this.card.querySelector<HTMLElement>('.pv3-loop-zone');
+    const innerConn = document.getElementById('pv3-inner-conn');
+    const backConn  = document.getElementById('pv3-back-conn');
+    const coder    = document.getElementById('pv3-coder');
+    const tester   = document.getElementById('pv3-tester');
+    const reviewer = document.getElementById('pv3-reviewer');
 
-    PipelineAnimation.STAGE_DELAYS.forEach((delay, i) => {
-      const t = setTimeout(() => {
-        /* activate step */
-        if (i < 3) {
-          steps[i]?.classList.add('pv2-active');
-          if (i > 0) connectors[i - 1]?.classList.add('conn-active');
-        } else if (i === 3) {
-          connectors[2]?.classList.add('conn-active');
-          loopBlock?.classList.add('pv2-loop-active');
-          /* animate loop: coder first, then parallel tester+reviewer */
-          coder?.classList.add('ls-active');
-          setTimeout(() => { tester?.classList.add('ls-active'); reviewer?.classList.add('ls-active'); }, 600);
-          /* simulate second iteration */
-          setTimeout(() => {
-            [coder, tester, reviewer].forEach(e => e?.classList.remove('ls-active'));
-            setTimeout(() => {
-              coder?.classList.add('ls-active');
-              setTimeout(() => { tester?.classList.add('ls-active'); reviewer?.classList.add('ls-active'); }, 500);
-            }, 300);
-          }, 1400);
-        } else {
-          connectors[3]?.classList.add('conn-active');
-          steps[i - 1]?.classList.add('pv2-active');
-        }
+    const addLine = (i: number) => {
+      if (!body || i >= PipelineAnimation.TERMINAL_LINES.length) return;
+      const span = document.createElement('span');
+      span.className   = `terminal-line ${PipelineAnimation.TERMINAL_LINES[i]!.cls}`;
+      span.textContent = PipelineAnimation.TERMINAL_LINES[i]!.text;
+      body.appendChild(span);
+    };
 
-        if (body && i < PipelineAnimation.TERMINAL_LINES.length) {
-          const span       = document.createElement('span');
-          span.className   = `terminal-line ${PipelineAnimation.TERMINAL_LINES[i]!.cls}`;
-          span.textContent = PipelineAnimation.TERMINAL_LINES[i]!.text;
-          body.appendChild(span);
-        }
-      }, delay);
-      this.timers.push(t);
+    /* step 0 — input node */
+    this.activate(0, () => { nodes[0]?.classList.add('node-active'); addLine(0); });
+
+    /* step 1 — conn0 flows → research node */
+    this.activate(600,  () => { conns[0]?.classList.add('conn-active'); });
+    this.activate(1000, () => { nodes[1]?.classList.add('node-active'); addLine(1); });
+
+    /* step 2 — conn1 flows → human node */
+    this.activate(1400, () => { conns[1]?.classList.add('conn-active'); });
+    this.activate(1800, () => { nodes[2]?.classList.add('node-active'); addLine(2); });
+
+    /* step 3 — conn2 flows → loop zone opens */
+    this.activate(2300, () => { conns[2]?.classList.add('conn-active'); });
+    this.activate(2700, () => { loopZone?.classList.add('loop-active'); addLine(3); });
+
+    /* loop iteration 1: coder → inner conn flows → tester+reviewer */
+    this.activate(2900, () => { coder?.classList.add('node-active'); });
+    this.activate(3200, () => { innerConn?.classList.add('conn-active'); });
+    this.activate(3500, () => {
+      tester?.classList.add('node-active');
+      reviewer?.classList.add('node-active');
+      addLine(4);
     });
 
-    /* final terminal lines after loop */
-    [5, 6, 7].forEach((lineIdx, offset) => {
-      const t = setTimeout(() => {
-        if (!body || lineIdx >= PipelineAnimation.TERMINAL_LINES.length) return;
-        const span       = document.createElement('span');
-        span.className   = `terminal-line ${PipelineAnimation.TERMINAL_LINES[lineIdx]!.cls}`;
-        span.textContent = PipelineAnimation.TERMINAL_LINES[lineIdx]!.text;
-        body.appendChild(span);
-      }, 4200 + (offset + 1) * 500);
-      this.timers.push(t);
+    /* back arrow fires (issues found, re-iterate) */
+    this.activate(4000, () => { backConn?.classList.add('back-active'); addLine(5); });
+
+    /* loop iteration 2: reset loop nodes, re-run */
+    this.activate(4600, () => {
+      [coder, tester, reviewer].forEach(e => e?.classList.remove('node-active'));
+      innerConn?.classList.remove('conn-active');
+    });
+    this.activate(4900, () => { coder?.classList.add('node-active'); });
+    this.activate(5100, () => { innerConn?.classList.add('conn-active'); });
+    this.activate(5400, () => {
+      tester?.classList.add('node-active');
+      reviewer?.classList.add('node-active');
+      addLine(6); /* clean */
+    });
+    this.activate(5800, () => {
+      backConn?.classList.remove('back-active'); /* clean — no back arrow */
     });
 
-    const end = setTimeout(() => { this.running = false; }, 7500);
-    this.timers.push(end);
+    /* exit loop → conn3 flows → CR ready */
+    this.activate(6000, () => { conns[3]?.classList.add('conn-active'); });
+    this.activate(6400, () => { nodes[3]?.classList.add('node-active'); addLine(7); });
+
+    this.activate(7200, () => { this.running = false; });
   }
 
   private reset(): void {
@@ -335,11 +345,10 @@ class PipelineAnimation {
     this.timers  = [];
     this.running = false;
 
-    this.card.querySelectorAll<HTMLElement>('.pv2-step').forEach(s => s.classList.remove('pv2-active'));
-    this.card.querySelectorAll<HTMLElement>('.pv2-connector').forEach(c => c.classList.remove('conn-active'));
-    this.card.querySelector<HTMLElement>('.pv2-loop-block')?.classList.remove('pv2-loop-active');
-    ['pv2-coder', 'pv2-tester', 'pv2-reviewer'].forEach(id =>
-      document.getElementById(id)?.classList.remove('ls-active'));
+    this.card.querySelectorAll<HTMLElement>('.pv3-node').forEach(n => n.classList.remove('node-active'));
+    this.card.querySelectorAll<HTMLElement>('.pv3-conn').forEach(c => c.classList.remove('conn-active'));
+    this.card.querySelector<HTMLElement>('.pv3-loop-zone')?.classList.remove('loop-active');
+    document.getElementById('pv3-back-conn')?.classList.remove('back-active');
 
     const body = document.getElementById('pipeline-terminal-body');
     if (body) body.innerHTML = '<span class="terminal-line info">Hover to run a live demo...</span>';
