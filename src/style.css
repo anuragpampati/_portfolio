@@ -684,9 +684,10 @@ body:has(button:hover) .cursor-ring {
   display: flex;
   align-items: center;
   gap: 0;
-  flex-wrap: wrap;
-  row-gap: 16px;
+  flex-wrap: nowrap;
   margin-bottom: 20px;
+  overflow-x: auto;
+  padding-bottom: 4px;
 }
 
 /* Nodes */
@@ -694,14 +695,14 @@ body:has(button:hover) .cursor-ring {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  padding: 10px 13px;
-  border-radius: 12px;
+  gap: 2px;
+  padding: 7px 9px;
+  border-radius: 9px;
   border: 1px solid var(--card-border);
   background: rgba(255,255,255,0.03);
   transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
   flex-shrink: 0;
-  min-width: 72px;
+  min-width: 56px;
 }
 .pv3-node.node-active {
   border-color: rgba(249,115,22,0.6);
@@ -719,15 +720,15 @@ body:has(button:hover) .cursor-ring {
   background: rgba(74,222,128,0.09);
   box-shadow: 0 0 18px rgba(74,222,128,0.18);
 }
-.pv3-icon  { font-size: 20px; line-height: 1; }
-.pv3-label { font-size: 11px; font-weight: 700; color: var(--text); text-align: center; }
+.pv3-icon  { font-size: 14px; line-height: 1; }
+.pv3-label { font-size: 10px; font-weight: 700; color: var(--text); text-align: center; }
 .pv3-sub   { font-size: 9px;  color: var(--subtle); text-align: center; }
 
 /* Connectors */
 .pv3-conn {
   flex: 1;
-  min-width: 20px;
-  max-width: 44px;
+  min-width: 12px;
+  max-width: 26px;
   height: 2px;
   position: relative;
   background: repeating-linear-gradient(
@@ -761,15 +762,15 @@ body:has(button:hover) .cursor-ring {
 
 /* Smaller connector inside loop */
 .pv3-conn-sm {
-  min-width: 14px;
-  max-width: 22px;
+  min-width: 8px;
+  max-width: 16px;
 }
 
 /* Loop zone */
 .pv3-loop-zone {
   border: 1.5px dashed rgba(249,115,22,0.2);
   border-radius: 14px;
-  padding: 10px 12px 8px;
+  padding: 7px 9px 6px;
   position: relative;
   flex-shrink: 0;
   transition: border-color 0.35s, box-shadow 0.35s;
@@ -799,8 +800,8 @@ body:has(button:hover) .cursor-ring {
   gap: 0;
 }
 .pv3-ln {
-  min-width: 58px;
-  padding: 8px 10px;
+  min-width: 50px;
+  padding: 6px 8px;
 }
 .pv3-ln.node-active {
   border-color: rgba(249,115,22,0.6);
